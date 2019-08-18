@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { format } from '../utils/format'
 
 /**
  * Clase para presentar información preliminar sobre una bicicleta
@@ -8,13 +9,13 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
  */
 class ItemBicicleta extends Component {
   render() {
-    const { bicicleta } = this.props
+    const { bicicleta, abrirBicicleta } = this.props
     return (
-      <TouchableOpacity style={styles.itemBicicleta}>
+      <TouchableOpacity style={styles.itemBicicleta} onPress={abrirBicicleta}>
         <View style={styles.info}>
           <Text style={styles.referencia}>{bicicleta.referencia}</Text>
           <Text style={styles.nombre}>{bicicleta.nombre}</Text>
-          <Text style={styles.precio}>{bicicleta.precio}</Text>
+          <Text style={styles.precio}>{format(bicicleta.precio)}</Text>
         </View>
         <View style={styles.viewImagen}>
           <Image source={{ uri: bicicleta.imagen }} style={styles.imagen} resizeMode="cover" />
@@ -27,6 +28,8 @@ class ItemBicicleta extends Component {
 const styles = StyleSheet.create({
   itemBicicleta: {
     flexDirection: 'row',
+    padding: 5,
+    paddingRight: 20
   },
   info: {
     flex: 3,
@@ -38,7 +41,8 @@ const styles = StyleSheet.create({
   },
   imagen: {
     flex: 1,
-    flexGrow: 1
+    flexGrow: 1,
+    borderRadius: 8
   },
   separador: {
     height: 10,

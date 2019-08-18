@@ -19,14 +19,24 @@ class Buscar extends Component {
 
   state = {
     query: '',
-    bicicletas: []
+    bicicletas: [],
+    pagina: 0
   }
+
+	/**
+	 * Método para navegar hacia la página de detalle de la bicicleta
+	 * cuando se presiona
+	 */
+	abrirBicicleta = bicicleta => () => {
+		const { navigation } = this.props
+		navigation.navigate('Bicicleta', { bicicleta })
+	}
 
   /**
    * Método para renderizar la lista de bicicletas
    */
   renderBicicletas = ({ item }) => (
-    <ItemBicicleta bicicleta={item} />
+    <ItemBicicleta bicicleta={item} abrirBicicleta={this.abrirBicicleta(item).bind(this)} />
   )
 
   /**
@@ -39,10 +49,16 @@ class Buscar extends Component {
   /**
    * Método para buscar bicicletas
    */
-  buscar = () => {
-    const { query } = this.state 
-    const filtradas = bicicletas.filter(b => JSON.stringify(b).toLowerCase().includes(query.toLowerCase()))
-    this.setState({ bicicletas: filtradas })
+  buscar = async () => {
+    const { query, pagina } = this.state
+    // const filtradas = bicicletas.filter(b => JSON.stringify(b).toLowerCase().includes(query.toLowerCase()))
+    // this.setState({ bicicletas: filtradas })
+
+    const response = await buscarBicicletas(query, LIMIT, pagina * LIMIT)
+    if (response.status === 200) {
+      const bicicletas = response.data.list
+      this.setState({ bicicletas })
+    }
   }
 
   render() {
@@ -67,7 +83,7 @@ class Buscar extends Component {
           <FlatList
             data={bicicletas}
             renderItem={this.renderBicicletas}
-            keyExtractor={(item, index) => item.id}
+            keyExtractor={(item, index) => `${item.id}`}
             ItemSeparatorComponent={() => (<View style={styles.separador} />)}
           />
         </ScrollView>
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   textoBoton: {
-    fontSize: 13, 
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#fff'
   },

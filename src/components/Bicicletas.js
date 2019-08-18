@@ -27,27 +27,35 @@ class Bicicletas extends Component {
    */
   componentWillMount() {
     this.cargarBicicletas()
-    this.setState({ bicicletas })
+    // this.setState({ bicicletas })
   }
 
   /**
    * Método para cargar bicicletas teniendo en cuenta la paginación
    */
   cargarBicicletas = async () => {
-    // const { pagina } = this.state
-    // const response = await paginarBicicletas(LIMIT, pagina * LIMIT)
-    // console.log(response)
-    // if (response.status === 200) {
-    //   const bicicletas = response.data.list
-    //   this.setState({ bicicletas })
-    // }
+    const { pagina } = this.state
+    const response = await paginarBicicletas(LIMIT, pagina * LIMIT)
+    if (response.status === 200) {
+      const bicicletas = response.data.list
+      this.setState({ bicicletas })
+    }
   }
+
+	/**
+	 * Método para navegar hacia la página de detalle de la bicicleta
+	 * cuando se presiona
+	 */
+	abrirBicicleta = bicicleta => () => {
+  	const { navigation } = this.props
+		navigation.navigate('Bicicleta', { bicicleta })
+	}
 
   /**
    * Método para renderizar la lista de bicicletas
    */
   renderBicicletas = ({ item }) => (
-    <ItemBicicleta bicicleta={item} />
+    <ItemBicicleta bicicleta={item} abrirBicicleta={this.abrirBicicleta(item).bind(this)}/>
   )
 
   /**
@@ -90,7 +98,7 @@ class Bicicletas extends Component {
           <FlatList
             data={bicicletas}
             renderItem={this.renderBicicletas}
-            keyExtractor={(item, index) => item.id}
+            keyExtractor={(item, index) => `${item.id}`}
             ItemSeparatorComponent={() => (<View style={styles.separador} />)}
           />
           <View style={styles.barraPaginacion}>
@@ -131,7 +139,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   containerBicicletas: {
-    marginTop: 60,
+    marginTop: 70,
   },
   boton: {
     paddingHorizontal: 20,
@@ -143,7 +151,7 @@ const styles = StyleSheet.create({
     borderRadius: 8
   },
   textoBoton: {
-    fontSize: 13, 
+    fontSize: 13,
     fontWeight: 'bold',
     color: '#fff'
   },
