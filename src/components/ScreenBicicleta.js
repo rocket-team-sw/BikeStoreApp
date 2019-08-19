@@ -39,6 +39,14 @@ class ScreenBicicleta extends Component {
 		guardarCarrito(carrito)
 		alert("Se ha agregado al carrito!")
 	}
+
+	/**
+	 * Método para navegar a la pantalla de Carrito
+	 */
+	abrirCarrito = () => {
+		const { navigation } = this.props
+		navigation.navigate('Carrito')
+	}
 	
 	render() {
 		const { navigation } = this.props
@@ -51,7 +59,7 @@ class ScreenBicicleta extends Component {
 						<Icon name="md-arrow-back" size={27} color="#fff" />
 					</TouchableOpacity>
 					<Text style={styles.titulo}>{ bicicleta.nombre }</Text>
-					<TouchableOpacity onPress={() => navigation.goBack()}>
+					<TouchableOpacity onPress={this.abrirCarrito}>
 						<Icon name="md-cart" size={27} color="#fff" />
 					</TouchableOpacity>
 				</View>

@@ -84,15 +84,26 @@ class Bicicletas extends Component {
     navigation.navigate('Buscar')
   }
 
+	/**
+	 * Método para navegar a la pantalla de Carrito
+	 */
+  abrirCarrito = () => {
+		const { navigation } = this.props
+		navigation.navigate('Carrito')
+	}
+
   render() {
     const { bicicletas } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.titulo}>Nuestros Productos</Text>
-          <TouchableOpacity onPress={this.abrirBusqueda}>
-            <Icon name="md-search" size={27} color="#fff" />
-          </TouchableOpacity>
+					<TouchableOpacity onPress={this.abrirBusqueda}>
+						<Icon name="md-search" size={27} color="#fff" />
+					</TouchableOpacity>
+					<Text style={styles.titulo}>Nuestros Productos</Text>
+					<TouchableOpacity onPress={this.abrirCarrito}>
+						<Icon name="md-cart" size={27} color="#fff" />
+					</TouchableOpacity>
         </View>
         <ScrollView style={styles.containerBicicletas} ref={ref => this.scrollView = ref}>
           <FlatList
