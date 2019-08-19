@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import ItemBicicleta from './ItemBicicleta'
 
 import { colors } from '../utils/colors'
-import { bicicletas } from '../datos/bicicletas'
 import { buscarBicicletas } from '../services/bicicletas'
 
 const LIMIT = 10
@@ -49,11 +48,8 @@ class Buscar extends Component {
   /**
    * Método para buscar bicicletas
    */
-  buscar = async () => {
-    const { query, pagina } = this.state
-    // const filtradas = bicicletas.filter(b => JSON.stringify(b).toLowerCase().includes(query.toLowerCase()))
-    // this.setState({ bicicletas: filtradas })
-
+  buscar = async (pagina=0) => {
+    const { query } = this.state
     const response = await buscarBicicletas(query, LIMIT, pagina * LIMIT)
     if (response.status === 200) {
       const bicicletas = response.data.list
@@ -61,9 +57,29 @@ class Buscar extends Component {
     }
   }
 
+	/**
+	 * Método para obtener las bicicletas con paginación, variando la página
+	 */
+	siguientePagina = () => {
+		const pagina = this.state.pagina + 1
+		this.setState({ pagina })
+		this.buscar(pagina)
+		this.scrollView.scrollTo({ x: 0, y: 0 })
+	}
+
+	/**
+	 * Método para obtener las bicicletas con paginación, variando la página
+	 */
+	anteriorPagina = () => {
+		const pagina = this.state.pagina - 1
+		this.setState({ pagina })
+		this.buscar(pagina)
+		this.scrollView.scrollTo({ x: 0, y: 0 })
+	}
+
   render() {
     const { navigation } = this.props
-    const { query, bicicletas } = this.state
+    const { query, bicicletas, pagina } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -75,7 +91,7 @@ class Buscar extends Component {
         </View>
         <View style={styles.barraBusqueda}>
           <TextInput value={query} onChangeText={this.handleChange} style={styles.input} placeholder="Buscar..." />
-          <TouchableOpacity style={styles.botonBuscar} onPress={this.buscar}>
+          <TouchableOpacity style={styles.botonBuscar} onPress={() => this.buscar(0)}>
             <Icon name="md-search" size={27} color="#000" />
           </TouchableOpacity>
         </View>
@@ -86,6 +102,14 @@ class Buscar extends Component {
             keyExtractor={(item, index) => `${item.id}`}
             ItemSeparatorComponent={() => (<View style={styles.separador} />)}
           />
+					{ bicicletas.length > 0 && <View style={styles.barraPaginacion}>
+						{ pagina > 0 && <TouchableOpacity style={styles.boton} onPress={this.anteriorPagina}>
+							<Text style={styles.textoBoton}>Anterior</Text>
+						</TouchableOpacity>}
+						{ bicicletas.length === LIMIT && <TouchableOpacity style={styles.boton} onPress={this.siguientePagina}>
+							<Text style={styles.textoBoton}>Siguiente</Text>
+						</TouchableOpacity>}
+					</View>}
         </ScrollView>
       </View>
     )

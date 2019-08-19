@@ -5,7 +5,6 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import ItemBicicleta from './ItemBicicleta'
 
 import { colors } from '../utils/colors'
-import { bicicletas } from '../datos/bicicletas'
 import { paginarBicicletas } from '../services/bicicletas'
 
 const LIMIT = 10
@@ -26,15 +25,13 @@ class Bicicletas extends Component {
    * Método que se ejecutará al iniciar el componente
    */
   componentWillMount() {
-    this.cargarBicicletas()
-    // this.setState({ bicicletas })
+    this.cargarBicicletas(0)
   }
 
   /**
    * Método para cargar bicicletas teniendo en cuenta la paginación
    */
-  cargarBicicletas = async () => {
-    const { pagina } = this.state
+  cargarBicicletas = async (pagina) => {
     const response = await paginarBicicletas(LIMIT, pagina * LIMIT)
     if (response.status === 200) {
       const bicicletas = response.data.list
@@ -62,18 +59,20 @@ class Bicicletas extends Component {
    * Método para obtener las bicicletas con paginación, variando la página
    */
   siguientePagina = () => {
-    const { pagina } = this.state
-    this.setState({ pagina: pagina + 1 })
-    this.cargarBicicletas()
+    const pagina = this.state.pagina + 1
+    this.setState({ pagina })
+    this.cargarBicicletas(pagina)
+		this.scrollView.scrollTo({ x: 0, y: 0 })
   }
 
   /**
    * Método para obtener las bicicletas con paginación, variando la página
    */
   anteriorPagina = () => {
-    const { pagina } = this.state
-    this.setState({ pagina: pagina - 1 })
-    this.cargarBicicletas()
+		const pagina = this.state.pagina - 1
+    this.setState({ pagina })
+    this.cargarBicicletas(pagina)
+		this.scrollView.scrollTo({ x: 0, y: 0 })
   }
 
   /**
@@ -93,7 +92,7 @@ class Bicicletas extends Component {
 	}
 
   render() {
-    const { bicicletas } = this.state
+    const { bicicletas, pagina } = this.state
     return (
       <View style={styles.container}>
         <View style={styles.header}>
@@ -113,12 +112,12 @@ class Bicicletas extends Component {
             ItemSeparatorComponent={() => (<View style={styles.separador} />)}
           />
           <View style={styles.barraPaginacion}>
-            <TouchableOpacity style={styles.boton}>
+						{ pagina > 0 && <TouchableOpacity style={styles.boton} onPress={this.anteriorPagina}>
               <Text style={styles.textoBoton}>Anterior</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.boton}>
+            </TouchableOpacity>}
+						{ bicicletas.length === LIMIT && <TouchableOpacity style={styles.boton} onPress={this.siguientePagina}>
               <Text style={styles.textoBoton}>Siguiente</Text>
-            </TouchableOpacity>
+            </TouchableOpacity>}
           </View>
         </ScrollView>
       </View>

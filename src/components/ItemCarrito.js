@@ -1,15 +1,38 @@
 import React, { Component } from 'react'
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native'
+import { View, StyleSheet, Text, Image, TouchableOpacity, Alert } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import { format } from '../utils/format'
+import { connect } from 'react-redux'
+import {setCarrito} from '../actions/carrito';
+import {guardarCarrito} from '../services/localStorage';
 
 class ItemCarrito extends Component {
+
+	/**
+	 *  Método para eliminar un item del carrito
+	 */
+	eliminarItemCarrito = () => {
+		const { carrito, item, dispatch } = this.props
+		Alert.alert('¿Eliminar Item?', "¿Desea eliminar este item del carrito?", 
+			[
+				{ text: 'Eliminar', onPress: () => {
+					const nuevoCarrito = Object.assign({}, carrito)
+						
+						delete nuevoCarrito[item.bicicleta.id]
+						dispatch(setCarrito(nuevoCarrito))
+						guardarCarrito(nuevoCarrito)
+					}
+				},
+				{ text: 'Cancelar' }
+			])
+	}
+	
 	render() {
 		const { bicicleta, cantidad } = this.props.item
 		return (
 			<View style={styles.container}>
 				<View style={styles.infoBorrar}>
-					<TouchableOpacity style={styles.btnBorrar}>
+					<TouchableOpacity style={styles.btnBorrar} onPress={this.eliminarItemCarrito}>
 						<Icon name="md-trash" size={18} color="#a22" />
 					</TouchableOpacity>
 				</View>
@@ -70,4 +93,8 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default ItemCarrito
+const mapStateToProps = ({ carrito }) => ({
+	carrito: carrito.carrito
+})
+
+export default connect(mapStateToProps)(ItemCarrito)
